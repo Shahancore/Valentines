@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fff5f7;
+            overflow-x: hidden;
+        }
+
+        .cursive {
+            font-family: 'Pacifico', cursive;
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff4d6d;
+            animation: fall linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        #noButton {
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Main Container -->
+    <div id="game-container" class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center relative z-10 border-4 border-pink-100">
+        
+        <!-- Question State -->
+        <div id="question-state">
+            <h1 class="cursive text-4xl md:text-5xl text-pink-600 mb-8 leading-tight">
+                Will you be my valentine?
+            </h1>
+
+            <div class="relative w-64 h-64 mx-auto mb-8 rounded-2xl overflow-hidden shadow-lg border-4 border-pink-200">
+                <!-- REPLACE THE SRC BELOW WITH YOUR IMAGE -->
+                <img id="main-img" 
+                     src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=500&auto=format&fit=crop" 
+                     alt="Valentine" 
+                     class="w-full h-full object-cover floating">
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4 items-center min-h-[60px]">
+                <button id="yesButton" 
+                        class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform transition active:scale-95">
+                    Yes!
+                </button>
+                <button id="noButton" 
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-8 rounded-full text-xl shadow-md">
+                    No
+                </button>
+            </div>
+        </div>
+
+        <!-- Success State (Hidden by default) -->
+        <div id="success-state" class="hidden">
+            <h1 class="cursive text-4xl md:text-5xl text-pink-600 mb-8 leading-tight">
+                Yay! Congratulations! ❤️
+            </h1>
+
+            <div class="relative w-64 h-64 mx-auto mb-8 rounded-2xl overflow-hidden shadow-lg border-4 border-pink-200">
+                <!-- REPLACE THE SRC BELOW WITH YOUR SECOND IMAGE -->
+                <img src="https://images.unsplash.com/photo-1518562180175-34a163b159c1?q=80&w=500&auto=format&fit=crop" 
+                     alt="Success" 
+                     class="w-full h-full object-cover">
+            </div>
+
+            <p class="text-pink-500 font-bold mb-8 text-lg">I knew you'd say yes!</p>
+
+            <button id="resetButton" 
+                    class="bg-pink-100 hover:bg-pink-200 text-pink-600 font-bold py-2 px-6 rounded-full transition">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <!-- Background Decoration -->
+    <div class="fixed top-0 left-0 w-full h-full -z-0 opacity-20 pointer-events-none">
+        <div class="absolute top-10 left-10 text-pink-300 text-6xl">❤</div>
+        <div class="absolute bottom-20 right-10 text-pink-300 text-6xl">❤</div>
+        <div class="absolute top-1/2 left-5 text-pink-300 text-4xl">❤</div>
+    </div>
+
+    <script>
+        const noButton = document.getElementById('noButton');
+        const yesButton = document.getElementById('yesButton');
+        const questionState = document.getElementById('question-state');
+        const successState = document.getElementById('success-state');
+        const resetButton = document.getElementById('resetButton');
+        
+        const noTexts = [
+            "Are you sure?",
+            "Think again...",
+            "Really?",
+            "Pllleeeeaaassseee?",
+            "You're breaking my heart :(",
+            "I'll be very sad...",
+            "Change your mind?",
+            "Maybe just a little yes?",
+            "Surely you don't mean that!",
+            "Give it another thought!"
+        ];
+
+        let noClickCount = 0;
+
+        function moveButton() {
+            // Calculate random position within the viewport, but keeping it somewhat near the container
+            const padding = 50;
+            const x = Math.random() * (window.innerWidth - noButton.offsetWidth - padding);
+            const y = Math.random() * (window.innerHeight - noButton.offsetHeight - padding);
+            
+            noButton.style.position = 'fixed';
+            noButton.style.left = x + 'px';
+            noButton.style.top = y + 'px';
+            
+            // Change text
+            noButton.innerText = noTexts[noClickCount % noTexts.length];
+            noClickCount++;
+
+            // Make the Yes button grow slightly each time No is clicked
+            const currentScale = 1 + (noClickCount * 0.1);
+            yesButton.style.transform = `scale(${Math.min(currentScale, 2)})`;
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+        noButton.addEventListener('mouseover', moveButton);
+        noButton.addEventListener('click', moveButton);
+
+        yesButton.addEventListener('click', () => {
+            questionState.classList.add('hidden');
+            successState.classList.remove('hidden');
+            
+            // Confetti hearts effect
+            for(let i = 0; i < 50; i++) {
+                setTimeout(createHeart, i * 100);
+            }
+        });
+
+        resetButton.addEventListener('click', () => {
+            noClickCount = 0;
+            noButton.style.position = 'static';
+            noButton.innerText = "No";
+            yesButton.style.transform = `scale(1)`;
+            successState.classList.add('hidden');
+            questionState.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
